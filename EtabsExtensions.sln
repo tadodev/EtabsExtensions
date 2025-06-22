@@ -31,6 +31,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure.IntegrationT
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core.FunctionalTests", "tests\Core.FunctionalTests\Core.FunctionalTests.csproj", "{34400420-FBF4-4A41-8190-A1DF21291D39}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SimulateData", "SimulateData", "{EBA0C6D7-A7BC-483B-8908-353686A9BB78}"
+	ProjectSection(SolutionItems) = preProject
+		BallyIR_postprocessing_data.accdb = BallyIR_postprocessing_data.accdb
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

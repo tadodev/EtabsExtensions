@@ -6,10 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Common\" />
-    <Folder Include="Entities\" />
-    <Folder Include="Events\" />
-    <Folder Include="Exception\" />
+    <PackageReference Include="MediatR" />
   </ItemGroup>
 
 </Project>
