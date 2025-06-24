@@ -1,29 +1,24 @@
-using EtabsExtensions.Core.JointDrift.Models;
-using EtabsExtensions.Domain.Entities.JointDrift;
+﻿using EtabsExtensions.Domain.Entities.JointDrift;
+using EtabsExtensions.Core.JointDrift;
 
 namespace EtabsExtensions.Core.JointDrift;
 
 public class JointDriftService
 {
-    private readonly IJointDriftRepository _repository;
-    private readonly IMapper _mapper;
+    private readonly IJointDriftRepository _jointDriftRepository;
 
-    public JointDriftService(IJointDriftRepository repository, IMapper mapper)
+    public JointDriftService(IJointDriftRepository jointDriftRepository)
     {
-        _repository = repository;
-        _mapper = mapper;
+        _jointDriftRepository = jointDriftRepository;
     }
 
-    public async Task<IList<JointDriftItemDto>> GetAllItemsAsync(CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<string>> GetUniqueCaseNamesAsync()
     {
-        var items = await _repository.GetAllItemsAsync(cancellationToken);
-        return _mapper.Map<IList<JointDriftItemDto>>(items);
+        return await _jointDriftRepository.GetUniqueCaseNamesAsync();
     }
 
-    public async Task AddItemsAsync(IEnumerable<JointDriftItem> jointDriftItems, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<JointDriftItem>> GetEntriesByCaseAsync(string outputCase)
     {
-        var mappedItems = _mapper.Map<IEnumerable<JointDriftItem>>(jointDriftItems);
-        await _repository.AddItemsAsync(mappedItems, cancellationToken);
+        return await _jointDriftRepository.GetEntriesByCaseAsync(outputCase);
     }
-    // Add more service methods as needed
 }

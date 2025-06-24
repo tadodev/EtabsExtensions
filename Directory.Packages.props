@@ -25,9 +25,10 @@
     <PackageVersion Include="ScottPlot" Version="5.0.55" />
     <PackageVersion Include="ScottPlot.WPF" Version="5.0.55" />
     <PackageVersion Include="coverlet.collector" Version="6.0.0" />
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
     <PackageVersion Include="NUnit" Version="3.14.0" />
     <PackageVersion Include="NUnit.Analyzers" Version="3.9.0" />
     <PackageVersion Include="NUnit3TestAdapter" Version="4.5.0" />
+    <PackageVersion Include="System.Data.OleDb" Version="9.0.6" />
   </ItemGroup>
 </Project>

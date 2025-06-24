@@ -15,6 +15,7 @@
     </PackageReference>
     <PackageReference Include="QuestPDF" />
     <PackageReference Include="ScottPlot" />
+    <PackageReference Include="System.Data.OleDb" />
   </ItemGroup>
 
   <ItemGroup>

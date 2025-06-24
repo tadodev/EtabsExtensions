@@ -1,12 +1,19 @@
-﻿using EtabsExtensions.Domain.Entities.JointDrift;
+using EtabsExtensions.Domain.Entities.JointDrift;
 
-namespace EtabsExtensions.Core.JointDrift
+namespace EtabsExtensions.Core.JointDrift;
+
+public interface IJointDriftRepository
 {
-    public interface IJointDriftRepository
-    {
-        Task AddItemAsync(JointDriftItem item, CancellationToken cancellationToken = default);
-        Task AddItemsAsync(IEnumerable<JointDriftItem> items, CancellationToken cancellationToken = default);
-        Task<IList<JointDriftItem>> GetAllItemsAsync(CancellationToken cancellationToken = default);
-        // Add more CRUD methods as needed
-    }
+    /// <summary>
+    /// Asynchronously retrieves a list of unique "Output Case" names from the data source.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous operation. The task result contains an enumerable of unique case name strings.</returns>
+    Task<IEnumerable<string>> GetUniqueCaseNamesAsync();
+
+    /// <summary>
+    /// Asynchronously retrieves all joint drift entries that match a specific output case.
+    /// </summary>
+    /// <param name="outputCase">The selected output case to filter the data by.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains an enumerable of JointDriftEntry objects.</returns>
+    Task<IEnumerable<JointDriftItem>> GetEntriesByCaseAsync(string outputCase);
 }

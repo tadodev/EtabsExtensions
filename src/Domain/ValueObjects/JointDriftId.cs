@@ -8,11 +8,11 @@ public sealed class JointDriftId : ValueObject
     /// Create a unique identifier for a joint drift item.
     /// </summary>
     public string? Story { get; }
-    public int Label { get; }
+    public string? Label { get; }
     public string? OutputCase { get; }
-    public int StepNumber { get; }
+    public double StepNumber { get; }
 
-    public JointDriftId(string? story, int label, string? outputCase, int stepNumber)
+    public JointDriftId(string? story, string? label, string? outputCase, double stepNumber)
     {
         Story = story;
         Label = label;
@@ -23,7 +23,7 @@ public sealed class JointDriftId : ValueObject
     protected override IEnumerable<object> GetEqualityComponents()
     {
         yield return Story!;
-        yield return Label;
+        yield return Label!;
         yield return OutputCase!;
         yield return StepNumber;
     }
