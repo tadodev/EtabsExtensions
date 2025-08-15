@@ -1,12 +1,15 @@
-﻿using Microsoft.Extensions.Hosting;
+﻿using EtabsExtensions.Core.ViewModels;
+using Microsoft.Extensions.Hosting;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
 public static class DependencyInjection
 {
-    public static void AddCoreServices(this IHostApplicationBuilder builder)
+    public static IServiceCollection AddCoreServices(this IServiceCollection services)
     {
-        // Register service
-        // Register AutoMapper (scan current assembly)
+        // Register ViewModels
+        services.AddTransient<MainViewModel>();
+
+        return services;
     }
 }

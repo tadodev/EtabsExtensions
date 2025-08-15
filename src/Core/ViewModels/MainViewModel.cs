@@ -2,12 +2,13 @@
 using CommunityToolkit.Mvvm.Input;
 using EtabsExtensions.Core.Services;
 using System.Collections.ObjectModel;
+using EtabsExtensions.Core.Models;
 
 namespace EtabsExtensions.Core.ViewModels;
 
 public partial class MainViewModel : ObservableObject
 {
-    public readonly ITodoService _todoService;
+    private readonly ITodoService _todoService;
 
     public MainViewModel(ITodoService todoService)
     {
@@ -57,15 +58,149 @@ public partial class MainViewModel : ObservableObject
             {
                 TodoItems.Add(new TodoItemViewModel(todo));
             }
-            TotalCount = TodoItems.Count;
-            CompletedCount = TodoItems.Count(t => t.IsCompleted);
-            StatusMessage = $"{TotalCount} todos loaded.";
-        }
-        catch (Exception)
-        {
 
-            throw;
+            await UpdateCountsAsync();
+
+            StatusMessage = $"Loaded {TodoItems.Count} todos.";
+        }
+        catch (Exception ex)
+        {
+            StatusMessage = $"Error loading todos: {ex.Message}";
+        }
+        finally
+        {
+            IsLoading = false;
         }
     }
 
+    [RelayCommand(CanExecute = nameof(CanAddTodos))]
+    private async Task AddTodoAsync()
+    {
+        try
+        {
+            IsLoading = true;
+            StatusMessage = "Adding new todo...";
+
+            var newTodo = new TodoItem
+            {
+                Title = NewTodoTitle.Trim(),
+                Description = string.IsNullOrWhiteSpace(NewTodoDescription) ? string.Empty : NewTodoDescription.Trim(),
+            };
+
+            var createTodo = await _todoService.CreateAsync(newTodo);
+            
+            var newTodoViewModel = new TodoItemViewModel(createTodo);
+
+            TodoItems.Add(newTodoViewModel);
+
+            NewTodoTitle = string.Empty;
+            NewTodoDescription = string.Empty;
+
+            await UpdateCountsAsync();
+
+            StatusMessage = "New todo added successfully.";
+
+            AddTodoCommand.NotifyCanExecuteChanged();
+        }
+        catch (Exception ex)
+        {
+            StatusMessage = $"Error adding todo: {ex.Message}";
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    [RelayCommand]
+    private async Task DeleteTodoAsync(TodoItemViewModel todoItemViewModel)
+    {
+        try
+        {
+            IsLoading = true;
+            StatusMessage = "Deleting todo...";
+
+            if (await _todoService.DeleteAsync(todoItemViewModel.Id))
+            {
+                TodoItems.Remove(todoItemViewModel);
+                await UpdateCountsAsync();
+                StatusMessage = "Todo deleted successfully.";
+            }
+            else
+            {
+                StatusMessage = "Failed to delete todo.";
+            }
+        }
+        catch (Exception ex)
+        {
+            StatusMessage = $"Error deleting todo: {ex.Message}";
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    [RelayCommand]
+    private async Task SaveTodoAsync(TodoItemViewModel todoViewModel)
+    {
+        try
+        {
+            IsLoading = true;
+            StatusMessage = "Saving todo...";
+
+            var updateTodo = _todoService.UpdateAsync(todoViewModel.ToModel());
+
+            await UpdateCountsAsync();
+            todoViewModel.IsEditing = false;
+            StatusMessage = "Todo saved successfully.";
+        }
+        catch (Exception ex)
+        {
+            StatusMessage = $"Error saving todo: {ex.Message}";
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    [RelayCommand]
+    private async Task ToggleTodoCompletedAsync(TodoItemViewModel todoItemViewModel)
+    {
+        try
+        {
+            var updateTodo = await _todoService.UpdateAsync(todoItemViewModel.ToModel());
+            await UpdateCountsAsync();
+        }
+        catch (Exception ex)
+        {
+            StatusMessage = $"Error updating todo: {ex.Message}";
+        }
+    }
+
+
+
+    private bool CanAddTodos()
+    {
+        return !string.IsNullOrWhiteSpace(NewTodoTitle) && !IsLoading;
+    }
+
+    // Update counts for total and completed todos
+    private async Task UpdateCountsAsync()
+    {
+        TotalCount = await _todoService.GetTotalCountAsync();
+        CompletedCount = await _todoService.GetCompletedCountAsync();
+        OnPropertyChanged(nameof(PendingCount));
+    }
+
+    partial void OnNewTodoTitleChanged(string value)
+    {
+        AddTodoCommand.NotifyCanExecuteChanged();
+    }
+
+    public async Task InitializeAsync()
+    {
+        await LoadTodosAsync();
+    }
 }

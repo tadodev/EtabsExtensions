@@ -47,6 +47,11 @@ public partial class TodoItemViewModel : ObservableObject
         OnPropertyChanged(nameof(IsCompleted));
     }
 
+
+    /// <summary>
+    /// Returns the underlying TodoItem model with updated properties to Database.
+    /// </summary>
+    /// <returns></returns>
     public TodoItem ToModel()
     {
         _todoItem.Title = Title;
