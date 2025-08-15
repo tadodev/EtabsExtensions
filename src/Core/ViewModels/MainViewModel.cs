@@ -55,8 +55,11 @@ public partial class MainViewModel : ObservableObject
             TodoItems.Clear();
             foreach (var todo in todos.OrderByDescending(t => t.CreatedAt))
             {
-
+                TodoItems.Add(new TodoItemViewModel(todo));
             }
+            TotalCount = TodoItems.Count;
+            CompletedCount = TodoItems.Count(t => t.IsCompleted);
+            StatusMessage = $"{TotalCount} todos loaded.";
         }
         catch (Exception)
         {
