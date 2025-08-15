@@ -1,6 +1,6 @@
 ﻿namespace EtabsExtensions.Infrastructure.Data.Configurations;
 
-public class JointDriftListConfiguration
+public class TodoItemConfiguration : IEntityTypeConfiguration<TodoItem>
 {
-        
+
 }
