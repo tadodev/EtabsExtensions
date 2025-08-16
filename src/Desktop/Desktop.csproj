@@ -9,6 +9,7 @@
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" />
     <PackageReference Include="ScottPlot.WPF" />
+    <PackageReference Include="Serilog" />
   </ItemGroup>
 
   <ItemGroup>

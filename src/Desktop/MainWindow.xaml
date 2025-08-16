@@ -4,9 +4,280 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Desktop"
+        xmlns:converters="clr-namespace:Desktop.Converters"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+        Title="Etabs Extension" 
+        Height="700" Width="900"
+        MinHeight="500" MinWidth="600"
+        Background="{StaticResource BackgroundBrush}"
+        WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVisConverter"/>
 
+        <!-- Todo Item Template -->
+        <DataTemplate x:Key="TodoItemTemplate">
+            <Border Background="{StaticResource SurfaceBrush}" 
+                    CornerRadius="8" 
+                    Margin="0,4" 
+                    Padding="16"
+                    Effect="{DynamicResource {x:Static SystemParameters.DropShadowKey}}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Checkbox -->
+                    <CheckBox Grid.Column="0" 
+                              IsChecked="{Binding IsCompleted}" 
+                              Command="{Binding DataContext.ToggleTodoCompleteCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                              CommandParameter="{Binding}"
+                              VerticalAlignment="Center"
+                              Margin="0,0,12,0"/>
+
+                    <!-- Content -->
+                    <StackPanel Grid.Column="1">
+                        <!-- Title -->
+                        <TextBox Text="{Binding Title, UpdateSourceTrigger=PropertyChanged}" 
+                                 Style="{StaticResource ModernTextBox}"
+                                 FontWeight="Medium"
+                                 FontSize="16"
+                                 Visibility="{Binding IsEditing, Converter={StaticResource BoolToVisConverter}}"
+                                 Margin="0,0,0,4"/>
+
+                        <TextBlock Text="{Binding Title}" 
+                                   FontWeight="Medium"
+                                   FontSize="16"
+                                   Foreground="{StaticResource TextPrimaryBrush}"
+                                   TextDecorations="{Binding IsCompleted, Converter={x:Static converters:BooleanToTextDecorationConverter.Instance}}"
+                                   Visibility="{Binding IsEditing, Converter={x:Static converters:InverseBooleanToVisibilityConverter.Instance}}"
+                                   Margin="0,0,0,4"/>
+
+                        <!-- Description -->
+                        <TextBox Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}" 
+                                 Style="{StaticResource ModernTextBox}"
+                                 FontSize="14"
+                                 TextWrapping="Wrap"
+                                 AcceptsReturn="True"
+                                 MaxHeight="100"
+                                 Visibility="{Binding IsEditing, Converter={StaticResource BoolToVisConverter}}"/>
+
+                        <TextBlock Text="{Binding Description}" 
+                                   FontSize="14"
+                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                   TextWrapping="Wrap"
+                                   Visibility="{Binding IsEditing, Converter={x:Static converters:InverseBooleanToVisibilityConverter.Instance}}"
+                                   Margin="0,0,0,8"/>
+
+                        <!-- Metadata -->
+                        <StackPanel Orientation="Horizontal" 
+                                    Visibility="{Binding IsEditing, Converter={x:Static converters:InverseBooleanToVisibilityConverter.Instance}}">
+                            <TextBlock Text="{Binding CreatedAt, StringFormat='Created: {0:MMM dd, yyyy}'}" 
+                                       FontSize="12"
+                                       Foreground="{StaticResource TextSecondaryBrush}"
+                                       Margin="0,0,16,0"/>
+                            <TextBlock Text="{Binding CompletedAt, StringFormat='Completed: {0:MMM dd, yyyy}'}" 
+                                       FontSize="12"
+                                       Foreground="{StaticResource AccentBrush}"
+                                       Visibility="{Binding IsCompleted, Converter={StaticResource BoolToVisConverter}}"/>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!-- Actions -->
+                    <StackPanel Grid.Column="2" 
+                                Orientation="Horizontal"
+                                VerticalAlignment="Top">
+                        <!-- Edit/Save Button -->
+                        <Button Content="✏️" 
+                                Command="{Binding ToggleEditCommand}"
+                                Style="{StaticResource ModernButton}"
+                                Background="Transparent"
+                                Foreground="{StaticResource TextSecondaryBrush}"
+                                Visibility="{Binding IsEditing, Converter={x:Static converters:InverseBooleanToVisibilityConverter.Instance}}"
+                                Margin="4,0"/>
+
+                        <Button Content="💾" 
+                                Command="{Binding DataContext.SaveTodoCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                CommandParameter="{Binding}"
+                                Style="{StaticResource ModernButton}"
+                                Background="{StaticResource AccentBrush}"
+                                Visibility="{Binding IsEditing, Converter={StaticResource BoolToVisConverter}}"
+                                Margin="4,0"/>
+
+                        <!-- Delete Button -->
+                        <Button Content="🗑️" 
+                                Command="{Binding DataContext.DeleteTodoCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                CommandParameter="{Binding}"
+                                Style="{StaticResource ModernButton}"
+                                Background="{StaticResource ErrorBrush}"
+                                Margin="4,0"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </DataTemplate>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" 
+                Background="{StaticResource PrimaryBrush}" 
+                Padding="24,16">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0">
+                    <TextBlock Text="Modern Todo App" 
+                               FontSize="28" 
+                               FontWeight="Light" 
+                               Foreground="White"/>
+                    <TextBlock Text="Organize your tasks efficiently" 
+                               FontSize="14" 
+                               Foreground="#B3E5FC" 
+                               Margin="0,4,0,0"/>
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" 
+                            Orientation="Horizontal"
+                            VerticalAlignment="Center">
+                    <Border Background="#1976D2" 
+                            CornerRadius="12" 
+                            Padding="12,6" 
+                            Margin="0,0,8,0">
+                        <TextBlock>
+                            <Run Text="Total: " FontWeight="Medium"/>
+                            <Run Text="{Binding TotalCount}" FontWeight="Bold"/>
+                        </TextBlock>
+                    </Border>
+                    <Border Background="#4CAF50" 
+                            CornerRadius="12" 
+                            Padding="12,6" 
+                            Margin="0,0,8,0">
+                        <TextBlock>
+                            <Run Text="Done: " FontWeight="Medium"/>
+                            <Run Text="{Binding CompletedCount}" FontWeight="Bold"/>
+                        </TextBlock>
+                    </Border>
+                    <Border Background="#FF9800" 
+                            CornerRadius="12" 
+                            Padding="12,6">
+                        <TextBlock>
+                            <Run Text="Pending: " FontWeight="Medium"/>
+                            <Run Text="{Binding PendingCount}" FontWeight="Bold"/>
+                        </TextBlock>
+                    </Border>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Add Todo Section -->
+        <Border Grid.Row="1" 
+                Background="{StaticResource SurfaceBrush}" 
+                Padding="24,16"
+                BorderBrush="#E0E0E0" 
+                BorderThickness="0,0,0,1">
+            <StackPanel>
+                <TextBlock Text="Add New Todo" 
+                           FontSize="18" 
+                           FontWeight="Medium" 
+                           Foreground="{StaticResource TextPrimaryBrush}"
+                           Margin="0,0,0,12"/>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Title Input -->
+                    <TextBox Grid.Row="0" 
+                             Grid.Column="0"
+                             Text="{Binding NewTodoTitle, UpdateSourceTrigger=PropertyChanged}" 
+                             Style="{StaticResource ModernTextBox}"
+                             FontSize="16"
+                             Margin="0,0,16,8">
+                        <TextBox.InputBindings>
+                            <KeyBinding Key="Enter" Command="{Binding AddTodoCommand}"/>
+                        </TextBox.InputBindings>
+                    </TextBox>
+
+                    <!-- Add Button -->
+                    <Button Grid.Row="0" 
+                            Grid.Column="1"
+                            Content="➕ Add Todo" 
+                            Command="{Binding AddTodoCommand}"
+                            Style="{StaticResource ModernButton}"
+                            FontSize="14"
+                            Padding="20,12"
+                            VerticalAlignment="Top"/>
+
+                    <!-- Description Input -->
+                    <TextBox Grid.Row="1" 
+                             Grid.ColumnSpan="2"
+                             Text="{Binding NewTodoDescription, UpdateSourceTrigger=PropertyChanged}" 
+                             Style="{StaticResource ModernTextBox}"
+                             FontSize="14"
+                             TextWrapping="Wrap"
+                             AcceptsReturn="True"
+                             MaxHeight="80"
+                             Margin="0,0,0,8"/>
+                </Grid>
+            </StackPanel>
+        </Border>
+
+        <!-- Todo List -->
+        <ScrollViewer Grid.Row="2" 
+                      VerticalScrollBarVisibility="Auto"
+                      Padding="24,16">
+            <ItemsControl ItemsSource="{Binding TodoItems}"
+                          ItemTemplate="{StaticResource TodoItemTemplate}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+        </ScrollViewer>
+
+        <!-- Status Bar -->
+        <Border Grid.Row="3" 
+                Background="{StaticResource SurfaceBrush}" 
+                BorderBrush="#E0E0E0" 
+                BorderThickness="0,1,0,0"
+                Padding="24,8">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0"
+                           Text="{Binding StatusMessage}" 
+                           FontSize="12" 
+                           Foreground="{StaticResource TextSecondaryBrush}"
+                           VerticalAlignment="Center"/>
+
+                <ProgressBar Grid.Column="1"
+                             IsIndeterminate="True" 
+                             Width="100" 
+                             Height="4"
+                             Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisConverter}}"
+                             VerticalAlignment="Center"/>
+            </Grid>
+        </Border>
     </Grid>
 </Window>

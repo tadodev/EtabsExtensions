@@ -1,12 +1,11 @@
-﻿using Microsoft.Extensions.Hosting;
-using System.Runtime.Versioning;
-using EtabsExtensions.Core.Services;
+﻿using EtabsExtensions.Core.Services;
 using EtabsExtensions.Infrastructure.Data;
 using EtabsExtensions.Infrastructure.Services;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace Microsoft.Extensions.DependencyInjection;
-public static class DependencyInjection
+namespace EtabsExtensions.Infrastructure;
+public static class InfrastructureServiceRegistration
 {
     public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
     {
