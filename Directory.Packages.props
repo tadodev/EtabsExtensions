@@ -30,10 +30,6 @@
         <PackageVersion Include="NUnit" Version="3.14.0" />
         <PackageVersion Include="NUnit.Analyzers" Version="3.9.0" />
         <PackageVersion Include="NUnit3TestAdapter" Version="4.5.0" />
-        <PackageVersion Include="Serilog" Version="4.3.0" />
-        <PackageVersion Include="Serilog.Extensions.Hosting" Version="9.0.1" />
-        <PackageVersion Include="Serilog.Sinks.Console" Version="6.1.0" />
-        <PackageVersion Include="Serilog.Sinks.File" Version="6.1.0" />
-        <PackageVersion Include="System.Data.OleDb" Version="9.0.6" />
+      
     </ItemGroup>
 </Project>
