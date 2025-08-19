@@ -56,7 +56,7 @@ public partial class MainViewModel : ObservableObject
             TodoItems.Clear();
             foreach (var todo in todos.OrderByDescending(t => t.CreatedAt))
             {
-                TodoItems.Add(new TodoItemViewModel(todo));
+                TodoItems.Add(new TodoItemViewModel(todo,_todoService));
             }
 
             await UpdateCountsAsync();
@@ -89,7 +89,7 @@ public partial class MainViewModel : ObservableObject
 
             var createTodo = await _todoService.CreateAsync(newTodo);
             
-            var newTodoViewModel = new TodoItemViewModel(createTodo);
+            var newTodoViewModel = new TodoItemViewModel(createTodo,_todoService);
 
             TodoItems.Add(newTodoViewModel);
 
@@ -170,12 +170,16 @@ public partial class MainViewModel : ObservableObject
     {
         try
         {
-            var updateTodo = await _todoService.UpdateAsync(todoItemViewModel.ToModel());
+            todoItemViewModel.ToggleComplete();
+            await _todoService.UpdateAsync(todoItemViewModel.ToModel());
             await UpdateCountsAsync();
+            StatusMessage = todoItemViewModel.IsCompleted ? "Todo marked as completed!" : "Todo marked as pending.";
         }
         catch (Exception ex)
         {
             StatusMessage = $"Error updating todo: {ex.Message}";
+            // Revert the change if update failed
+            todoItemViewModel.ToggleComplete();
         }
     }
 

@@ -20,11 +20,6 @@ public partial class App : Application
 
     protected override async void OnStartup(StartupEventArgs e)
     {
-        // Configure Serilog
-        Log.Logger = new LoggerConfiguration()
-            .WriteTo.File("logs\\app.log", rollingInterval: RollingInterval.Day)
-            .CreateLogger();
-
         try
         {
             // Build configuration
@@ -39,7 +34,7 @@ public partial class App : Application
 
             // Build host with dependency injection
             _host = Host.CreateDefaultBuilder()
-                .UseSerilog()
+                
                 .ConfigureServices((context, services) =>
                 {
                     // Register all services
@@ -83,6 +78,12 @@ public partial class App : Application
                 await _host.StopAsync();
                 _host.Dispose();
             }
+        }
+        catch (Exception ex)
+        {
+            Log.Fatal(ex, "Application exit failed");
+            MessageBox.Show($"Application failed to exit: {ex.Message}", "Error", MessageBoxButton.OK,
+                MessageBoxImage.Error);
         }
         finally
         {

@@ -1,16 +1,19 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using EtabsExtensions.Core.Models;
+using EtabsExtensions.Core.Services;
 
 namespace EtabsExtensions.Core.ViewModels;
 
 public partial class TodoItemViewModel : ObservableObject
 {
     private readonly TodoItem _todoItem;
+    private readonly ITodoService _todoService;
 
-    public TodoItemViewModel(TodoItem todoItem)
+    public TodoItemViewModel(TodoItem todoItem, ITodoService todoService)
     {
         _todoItem = todoItem;
+        _todoService = todoService;
         Title = _todoItem.Title;
         Description = _todoItem.Description ?? string.Empty;
         IsCompleted = _todoItem.IsCompleted;
@@ -41,12 +44,26 @@ public partial class TodoItemViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void ToggleComplete()
+    public void ToggleComplete()
     {
         IsCompleted = !IsCompleted;
         OnPropertyChanged(nameof(IsCompleted));
     }
 
+    [RelayCommand]
+    private async Task SaveAsync()
+    {
+        try
+        {
+            await _todoService.UpdateAsync(ToModel());
+            IsEditing = false;
+        }
+        catch (Exception ex)
+        {
+            // Handle error - could notify parent or show message
+            throw new InvalidOperationException($"Failed to save todo: {ex.Message}", ex);
+        }
+    }
 
     /// <summary>
     /// Returns the underlying TodoItem model with updated properties to Database.

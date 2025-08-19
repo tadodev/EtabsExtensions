@@ -1,25 +1,26 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-      <RootNamespace>EtabsExtensions.Infrastructure</RootNamespace>
-      <AssemblyName>EtabsExtensions.Infrastructure</AssemblyName>
-  </PropertyGroup>
+    <PropertyGroup>
+        <RootNamespace>EtabsExtensions.Infrastructure</RootNamespace>
+        <AssemblyName>EtabsExtensions.Infrastructure</AssemblyName>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="ClosedXML" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools">
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="QuestPDF" />
-    <PackageReference Include="ScottPlot" />
-    <PackageReference Include="System.Data.OleDb" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="ClosedXML" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools">
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.Extensions.Logging" />
+        <PackageReference Include="QuestPDF" />
+        <PackageReference Include="ScottPlot" />
+        <PackageReference Include="System.Data.OleDb" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Core\Core.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\Core\Core.csproj" />
+    </ItemGroup>
 
 </Project>

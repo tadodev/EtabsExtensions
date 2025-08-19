@@ -16,7 +16,13 @@
     <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
     <ProjectReference Include="..\Core\Core.csproj" />
   </ItemGroup>
-
+    
+    <!-- Copy appsettings files to output directory -->
+    <ItemGroup>
+        <Content Include="appsettings.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\" />
   </ItemGroup>

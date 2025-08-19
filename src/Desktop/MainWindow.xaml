@@ -73,11 +73,11 @@
                         <!-- Metadata -->
                         <StackPanel Orientation="Horizontal" 
                                     Visibility="{Binding IsEditing, Converter={x:Static converters:InverseBooleanToVisibilityConverter.Instance}}">
-                            <TextBlock Text="{Binding CreatedAt, StringFormat='Created: {0:MMM dd, yyyy}'}" 
+                            <TextBlock Text="{Binding CreatedAt, StringFormat='Created: {0:MMM dd, yyyy HH:mm}'}" 
                                        FontSize="12"
                                        Foreground="{StaticResource TextSecondaryBrush}"
                                        Margin="0,0,16,0"/>
-                            <TextBlock Text="{Binding CompletedAt, StringFormat='Completed: {0:MMM dd, yyyy}'}" 
+                            <TextBlock Text="{Binding CompletedAt, StringFormat='Completed: {0:MMM dd, yyyy HH:mm}'}" 
                                        FontSize="12"
                                        Foreground="{StaticResource AccentBrush}"
                                        Visibility="{Binding IsCompleted, Converter={StaticResource BoolToVisConverter}}"/>
@@ -95,7 +95,9 @@
                                 Background="Transparent"
                                 Foreground="{StaticResource TextSecondaryBrush}"
                                 Visibility="{Binding IsEditing, Converter={x:Static converters:InverseBooleanToVisibilityConverter.Instance}}"
-                                Margin="4,0"/>
+                                Width="32" Height="32"
+                                Margin="4,0"
+                                ToolTip="Edit"/>
 
                         <Button Content="💾" 
                                 Command="{Binding DataContext.SaveTodoCommand, RelativeSource={RelativeSource AncestorType=Window}}"
@@ -103,7 +105,9 @@
                                 Style="{StaticResource ModernButton}"
                                 Background="{StaticResource AccentBrush}"
                                 Visibility="{Binding IsEditing, Converter={StaticResource BoolToVisConverter}}"
-                                Margin="4,0"/>
+                                Width="32" Height="32"
+                                Margin="4,0"
+                                ToolTip="Save"/>
 
                         <!-- Delete Button -->
                         <Button Content="🗑️" 
@@ -111,7 +115,9 @@
                                 CommandParameter="{Binding}"
                                 Style="{StaticResource ModernButton}"
                                 Background="{StaticResource ErrorBrush}"
-                                Margin="4,0"/>
+                                Width="32" Height="32"
+                                Margin="4,0"
+                                ToolTip="Delete"/>
                     </StackPanel>
                 </Grid>
             </Border>
@@ -154,7 +160,7 @@
                             CornerRadius="12" 
                             Padding="12,6" 
                             Margin="0,0,8,0">
-                        <TextBlock>
+                        <TextBlock Foreground="White">
                             <Run Text="Total: " FontWeight="Medium"/>
                             <Run Text="{Binding TotalCount}" FontWeight="Bold"/>
                         </TextBlock>
@@ -163,7 +169,7 @@
                             CornerRadius="12" 
                             Padding="12,6" 
                             Margin="0,0,8,0">
-                        <TextBlock>
+                        <TextBlock Foreground="White">
                             <Run Text="Done: " FontWeight="Medium"/>
                             <Run Text="{Binding CompletedCount}" FontWeight="Bold"/>
                         </TextBlock>
@@ -171,7 +177,7 @@
                     <Border Background="#FF9800" 
                             CornerRadius="12" 
                             Padding="12,6">
-                        <TextBlock>
+                        <TextBlock Foreground="White">
                             <Run Text="Pending: " FontWeight="Medium"/>
                             <Run Text="{Binding PendingCount}" FontWeight="Bold"/>
                         </TextBlock>
@@ -209,7 +215,8 @@
                              Text="{Binding NewTodoTitle, UpdateSourceTrigger=PropertyChanged}" 
                              Style="{StaticResource ModernTextBox}"
                              FontSize="16"
-                             Margin="0,0,16,8">
+                             Margin="0,0,16,8"
+                             Tag="Enter todo title...">
                         <TextBox.InputBindings>
                             <KeyBinding Key="Enter" Command="{Binding AddTodoCommand}"/>
                         </TextBox.InputBindings>
@@ -234,7 +241,8 @@
                              TextWrapping="Wrap"
                              AcceptsReturn="True"
                              MaxHeight="80"
-                             Margin="0,0,0,8"/>
+                             Margin="0,0,0,8"
+                             Tag="Add description (optional)..."/>
                 </Grid>
             </StackPanel>
         </Border>
@@ -263,6 +271,7 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
                 <TextBlock Grid.Column="0"
@@ -271,7 +280,17 @@
                            Foreground="{StaticResource TextSecondaryBrush}"
                            VerticalAlignment="Center"/>
 
-                <ProgressBar Grid.Column="1"
+                <Button Grid.Column="1"
+                        Content="🔄 Refresh"
+                        Command="{Binding LoadTodosCommand}"
+                        Style="{StaticResource ModernButton}"
+                        Background="Transparent"
+                        Foreground="{StaticResource PrimaryBrush}"
+                        FontSize="12"
+                        Padding="8,4"
+                        Margin="0,0,8,0"/>
+
+                <ProgressBar Grid.Column="2"
                              IsIndeterminate="True" 
                              Width="100" 
                              Height="4"
