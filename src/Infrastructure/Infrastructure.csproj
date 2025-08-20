@@ -16,7 +16,6 @@
         <PackageReference Include="Microsoft.Extensions.Logging" />
         <PackageReference Include="QuestPDF" />
         <PackageReference Include="ScottPlot" />
-        <PackageReference Include="System.Data.OleDb" />
     </ItemGroup>
 
     <ItemGroup>
