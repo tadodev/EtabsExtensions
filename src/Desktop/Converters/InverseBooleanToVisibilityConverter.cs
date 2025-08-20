@@ -4,7 +4,7 @@ using System.Windows.Data;
 
 namespace Desktop.Converters;
 
-public class InverseBooleanToVisibilityConverter:IValueConverter
+public class InverseBooleanToVisibilityConverter : IValueConverter
 {
     public static readonly InverseBooleanToVisibilityConverter Instance = new();
 

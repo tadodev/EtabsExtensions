@@ -1,8 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using EtabsExtensions.Core.Models;
 using EtabsExtensions.Core.Services;
 using System.Collections.ObjectModel;
-using EtabsExtensions.Core.Models;
 
 namespace EtabsExtensions.Core.ViewModels;
 
@@ -36,11 +36,10 @@ public partial class MainViewModel : ObservableObject
     private int _completedCount;
 
     [ObservableProperty]
+    private int _pendingCount; // Changed from computed property to observable property
+
+    [ObservableProperty]
     private string _statusMessage = string.Empty;
-
-    // Computed property for pending count
-    public int PendingCount => TotalCount - CompletedCount;
-
 
     // Command to Load Todos from the service
     [RelayCommand]
@@ -56,7 +55,7 @@ public partial class MainViewModel : ObservableObject
             TodoItems.Clear();
             foreach (var todo in todos.OrderByDescending(t => t.CreatedAt))
             {
-                TodoItems.Add(new TodoItemViewModel(todo,_todoService));
+                TodoItems.Add(new TodoItemViewModel(todo, _todoService));
             }
 
             await UpdateCountsAsync();
@@ -88,10 +87,10 @@ public partial class MainViewModel : ObservableObject
             };
 
             var createTodo = await _todoService.CreateAsync(newTodo);
-            
-            var newTodoViewModel = new TodoItemViewModel(createTodo,_todoService);
 
-            TodoItems.Add(newTodoViewModel);
+            var newTodoViewModel = new TodoItemViewModel(createTodo, _todoService);
+
+            TodoItems.Insert(0, newTodoViewModel); // Insert at top for better UX
 
             NewTodoTitle = string.Empty;
             NewTodoDescription = string.Empty;
@@ -149,7 +148,7 @@ public partial class MainViewModel : ObservableObject
             IsLoading = true;
             StatusMessage = "Saving todo...";
 
-            var updateTodo = _todoService.UpdateAsync(todoViewModel.ToModel());
+            await _todoService.UpdateAsync(todoViewModel.ToModel());
 
             await UpdateCountsAsync();
             todoViewModel.IsEditing = false;
@@ -183,8 +182,6 @@ public partial class MainViewModel : ObservableObject
         }
     }
 
-
-
     private bool CanAddTodos()
     {
         return !string.IsNullOrWhiteSpace(NewTodoTitle) && !IsLoading;
@@ -195,7 +192,7 @@ public partial class MainViewModel : ObservableObject
     {
         TotalCount = await _todoService.GetTotalCountAsync();
         CompletedCount = await _todoService.GetCompletedCountAsync();
-        OnPropertyChanged(nameof(PendingCount));
+        PendingCount = TotalCount - CompletedCount; // Update pending count explicitly
     }
 
     partial void OnNewTodoTitleChanged(string value)

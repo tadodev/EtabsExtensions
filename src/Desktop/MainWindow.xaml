@@ -6,21 +6,94 @@
         xmlns:local="clr-namespace:Desktop"
         xmlns:converters="clr-namespace:Desktop.Converters"
         mc:Ignorable="d"
-        Title="Etabs Extension" 
-        Height="700" Width="900"
-        MinHeight="500" MinWidth="600"
+        Title="Etabs Extensions - Todo Manager" 
+        Height="800" Width="1000"
+        MinHeight="600" MinWidth="800"
         Background="{StaticResource BackgroundBrush}"
-        WindowStartupLocation="CenterScreen">
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="SingleBorderWindow"
+        ResizeMode="CanResize">
+
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVisConverter"/>
 
+        <!-- Modern Card Style -->
+        <Style x:Key="CardStyle" TargetType="Border">
+            <Setter Property="Background" Value="{StaticResource SurfaceBrush}"/>
+            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="Padding" Value="20"/>
+            <Setter Property="Margin" Value="0,8"/>
+            <Setter Property="BorderBrush" Value="#E0E0E0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect Color="Black" Direction="270" ShadowDepth="2" BlurRadius="8" Opacity="0.1"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Icon Button Style -->
+        <Style x:Key="IconButton" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Width" Value="36"/>
+            <Setter Property="Height" Value="36"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="18"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#F5F5F5"/>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="#EEEEEE"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Modern TextBox with Floating Label -->
+        <Style x:Key="FloatingLabelTextBox" TargetType="TextBox" BasedOn="{StaticResource ModernTextBox}">
+            <Setter Property="Padding" Value="12,20,12,8"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="#CCCCCC"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="8">
+                            <ScrollViewer x:Name="PART_ContentHost"
+                                          Margin="{TemplateBinding Padding}"
+                                          VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsFocused" Value="True">
+                    <Setter Property="BorderBrush" Value="{StaticResource PrimaryBrush}"/>
+                    <Setter Property="BorderThickness" Value="2"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
         <!-- Todo Item Template -->
         <DataTemplate x:Key="TodoItemTemplate">
-            <Border Background="{StaticResource SurfaceBrush}" 
-                    CornerRadius="8" 
-                    Margin="0,4" 
-                    Padding="16"
-                    Effect="{DynamicResource {x:Static SystemParameters.DropShadowKey}}">
+            <Border Style="{StaticResource CardStyle}">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
@@ -31,93 +104,149 @@
                     <!-- Checkbox -->
                     <CheckBox Grid.Column="0" 
                               IsChecked="{Binding IsCompleted}" 
-                              Command="{Binding DataContext.ToggleTodoCompleteCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                              Command="{Binding DataContext.ToggleTodoCompletedCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                               CommandParameter="{Binding}"
-                              VerticalAlignment="Center"
-                              Margin="0,0,12,0"/>
+                              VerticalAlignment="Top"
+                              Margin="0,8,16,0"
+                              Width="20"
+                              Height="20"/>
 
                     <!-- Content -->
-                    <StackPanel Grid.Column="1">
-                        <!-- Title -->
+                    <StackPanel Grid.Column="1" Margin="0,0,16,0">
+                        <!-- Title (Editing) -->
                         <TextBox Text="{Binding Title, UpdateSourceTrigger=PropertyChanged}" 
-                                 Style="{StaticResource ModernTextBox}"
-                                 FontWeight="Medium"
-                                 FontSize="16"
+                                 Style="{StaticResource FloatingLabelTextBox}"
+                                 FontWeight="SemiBold"
+                                 FontSize="18"
                                  Visibility="{Binding IsEditing, Converter={StaticResource BoolToVisConverter}}"
-                                 Margin="0,0,0,4"/>
+                                 Margin="0,0,0,8"
+                                 />
 
+                        <!-- Title (Display) -->
                         <TextBlock Text="{Binding Title}" 
-                                   FontWeight="Medium"
-                                   FontSize="16"
+                                   FontWeight="SemiBold"
+                                   FontSize="18"
                                    Foreground="{StaticResource TextPrimaryBrush}"
-                                   TextDecorations="{Binding IsCompleted, Converter={x:Static converters:BooleanToTextDecorationConverter.Instance}}"
-                                   Visibility="{Binding IsEditing, Converter={x:Static converters:InverseBooleanToVisibilityConverter.Instance}}"
-                                   Margin="0,0,0,4"/>
+                                   
+                                   
+                                   Margin="0,0,0,8"
+                                   TextWrapping="Wrap"/>
 
-                        <!-- Description -->
+                        <!-- Description (Editing) -->
                         <TextBox Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}" 
-                                 Style="{StaticResource ModernTextBox}"
+                                 Style="{StaticResource FloatingLabelTextBox}"
                                  FontSize="14"
                                  TextWrapping="Wrap"
                                  AcceptsReturn="True"
-                                 MaxHeight="100"
-                                 Visibility="{Binding IsEditing, Converter={StaticResource BoolToVisConverter}}"/>
+                                 MinHeight="60"
+                                 MaxHeight="120"
+                                 Visibility="{Binding IsEditing, Converter={StaticResource BoolToVisConverter}}"
+                                 Margin="0,0,0,8"
+                                 />
 
+                        <!-- Description (Display) -->
                         <TextBlock Text="{Binding Description}" 
                                    FontSize="14"
                                    Foreground="{StaticResource TextSecondaryBrush}"
                                    TextWrapping="Wrap"
-                                   Visibility="{Binding IsEditing, Converter={x:Static converters:InverseBooleanToVisibilityConverter.Instance}}"
-                                   Margin="0,0,0,8"/>
+                                   
+                                   Margin="0,0,0,12">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding HasDescription}" Value="False">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
 
                         <!-- Metadata -->
                         <StackPanel Orientation="Horizontal" 
-                                    Visibility="{Binding IsEditing, Converter={x:Static converters:InverseBooleanToVisibilityConverter.Instance}}">
-                            <TextBlock Text="{Binding CreatedAt, StringFormat='Created: {0:MMM dd, yyyy HH:mm}'}" 
-                                       FontSize="12"
-                                       Foreground="{StaticResource TextSecondaryBrush}"
-                                       Margin="0,0,16,0"/>
-                            <TextBlock Text="{Binding CompletedAt, StringFormat='Completed: {0:MMM dd, yyyy HH:mm}'}" 
-                                       FontSize="12"
-                                       Foreground="{StaticResource AccentBrush}"
-                                       Visibility="{Binding IsCompleted, Converter={StaticResource BoolToVisConverter}}"/>
+                                    >
+                            <Border Background="#E3F2FD" 
+                                    CornerRadius="12" 
+                                    Padding="8,4" 
+                                    Margin="0,0,8,0">
+                                <TextBlock Text="{Binding DisplayCreatedAt, StringFormat='📅 {0}'}" 
+                                           FontSize="11"
+                                           Foreground="#1976D2"
+                                           FontWeight="Medium"/>
+                            </Border>
+
+                            <Border Background="#E8F5E8" 
+                                    CornerRadius="12" 
+                                    Padding="8,4"
+                                    Visibility="{Binding IsCompleted, Converter={StaticResource BoolToVisConverter}}">
+                                <TextBlock Text="{Binding DisplayCompletedAt, StringFormat='✅ {0}'}" 
+                                           FontSize="11"
+                                           Foreground="#4CAF50"
+                                           FontWeight="Medium"/>
+                            </Border>
                         </StackPanel>
                     </StackPanel>
 
                     <!-- Actions -->
                     <StackPanel Grid.Column="2" 
                                 Orientation="Horizontal"
-                                VerticalAlignment="Top">
-                        <!-- Edit/Save Button -->
+                                VerticalAlignment="Top"
+                                Margin="0,4,0,0">
+
+                        <!-- Loading Indicator -->
+                        <Border Width="24" 
+                                Height="24" 
+                                Background="#2196F3"
+                                CornerRadius="12"
+                                Visibility="{Binding IsSaving, Converter={StaticResource BoolToVisConverter}}"
+                                Margin="0,0,8,0">
+                            <TextBlock Text="⏳" 
+                                       Foreground="White"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       FontSize="12"/>
+                        </Border>
+
+                        <!-- Edit Button -->
                         <Button Content="✏️" 
                                 Command="{Binding ToggleEditCommand}"
-                                Style="{StaticResource ModernButton}"
-                                Background="Transparent"
-                                Foreground="{StaticResource TextSecondaryBrush}"
-                                Visibility="{Binding IsEditing, Converter={x:Static converters:InverseBooleanToVisibilityConverter.Instance}}"
-                                Width="32" Height="32"
-                                Margin="4,0"
-                                ToolTip="Edit"/>
+                                Style="{StaticResource IconButton}"
+                                
+                                ToolTip="Edit todo"
+                                Margin="0,0,4,0"
+                                />
 
+                        <!-- Save Button -->
                         <Button Content="💾" 
-                                Command="{Binding DataContext.SaveTodoCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                                CommandParameter="{Binding}"
-                                Style="{StaticResource ModernButton}"
-                                Background="{StaticResource AccentBrush}"
+                                Command="{Binding SaveCommand}"
+                                Style="{StaticResource IconButton}"
+                                Background="#4CAF50"
+                                Foreground="White"
                                 Visibility="{Binding IsEditing, Converter={StaticResource BoolToVisConverter}}"
-                                Width="32" Height="32"
-                                Margin="4,0"
-                                ToolTip="Save"/>
+                                ToolTip="Save changes"
+                                Margin="0,0,4,0"
+                                />
+
+                        <!-- Cancel Button -->
+                        <Button Content="❌" 
+                                Command="{Binding CancelEditCommand}"
+                                Style="{StaticResource IconButton}"
+                                Background="#FF9800"
+                                Foreground="White"
+                                Visibility="{Binding IsEditing, Converter={StaticResource BoolToVisConverter}}"
+                                ToolTip="Cancel editing"
+                                Margin="0,0,4,0"
+                                />
 
                         <!-- Delete Button -->
                         <Button Content="🗑️" 
                                 Command="{Binding DataContext.DeleteTodoCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                 CommandParameter="{Binding}"
-                                Style="{StaticResource ModernButton}"
-                                Background="{StaticResource ErrorBrush}"
-                                Width="32" Height="32"
-                                Margin="4,0"
-                                ToolTip="Delete"/>
+                                Style="{StaticResource IconButton}"
+                                Background="#F44336"
+                                Foreground="White"
+                                ToolTip="Delete todo"
+                                />
                     </StackPanel>
                 </Grid>
             </Border>
@@ -135,7 +264,7 @@
         <!-- Header -->
         <Border Grid.Row="0" 
                 Background="{StaticResource PrimaryBrush}" 
-                Padding="24,16">
+                Padding="32,24">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
@@ -143,44 +272,61 @@
                 </Grid.ColumnDefinitions>
 
                 <StackPanel Grid.Column="0">
-                    <TextBlock Text="Modern Todo App" 
-                               FontSize="28" 
+                    <TextBlock Text="📋 Modern Todo Manager" 
+                               FontSize="32" 
                                FontWeight="Light" 
                                Foreground="White"/>
-                    <TextBlock Text="Organize your tasks efficiently" 
-                               FontSize="14" 
+                    <TextBlock Text="Organize your tasks with style and efficiency" 
+                               FontSize="16" 
                                Foreground="#B3E5FC" 
-                               Margin="0,4,0,0"/>
+                               Margin="0,8,0,0"/>
                 </StackPanel>
 
                 <StackPanel Grid.Column="1" 
                             Orientation="Horizontal"
                             VerticalAlignment="Center">
                     <Border Background="#1976D2" 
-                            CornerRadius="12" 
-                            Padding="12,6" 
-                            Margin="0,0,8,0">
-                        <TextBlock Foreground="White">
-                            <Run Text="Total: " FontWeight="Medium"/>
-                            <Run Text="{Binding TotalCount}" FontWeight="Bold"/>
-                        </TextBlock>
+                            CornerRadius="16" 
+                            Padding="16,8"
+                            Margin="0,0,12,0">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="📊" 
+                                       FontSize="16" 
+                                       Margin="0,0,8,0"/>
+                            <TextBlock Foreground="White" FontWeight="Medium">
+                                <Run Text="Total:" FontSize="14"/>
+                                <Run Text="{Binding TotalCount}" FontWeight="Bold" FontSize="18"/>
+                            </TextBlock>
+                        </StackPanel>
                     </Border>
+
                     <Border Background="#4CAF50" 
-                            CornerRadius="12" 
-                            Padding="12,6" 
-                            Margin="0,0,8,0">
-                        <TextBlock Foreground="White">
-                            <Run Text="Done: " FontWeight="Medium"/>
-                            <Run Text="{Binding CompletedCount}" FontWeight="Bold"/>
-                        </TextBlock>
+                            CornerRadius="16" 
+                            Padding="16,8"
+                            Margin="0,0,12,0">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="✅" 
+                                       FontSize="16" 
+                                       Margin="0,0,8,0"/>
+                            <TextBlock Foreground="White" FontWeight="Medium">
+                                <Run Text="Done:" FontSize="14"/>
+                                <Run Text="{Binding CompletedCount}" FontWeight="Bold" FontSize="18"/>
+                            </TextBlock>
+                        </StackPanel>
                     </Border>
+
                     <Border Background="#FF9800" 
-                            CornerRadius="12" 
-                            Padding="12,6">
-                        <TextBlock Foreground="White">
-                            <Run Text="Pending: " FontWeight="Medium"/>
-                            <Run Text="{Binding PendingCount}" FontWeight="Bold"/>
-                        </TextBlock>
+                            CornerRadius="16" 
+                            Padding="16,8">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="⏳" 
+                                       FontSize="16" 
+                                       Margin="0,0,8,0"/>
+                            <TextBlock Foreground="White" FontWeight="Medium">
+                                <Run Text="Pending:" FontSize="14"/>
+                                <Run Text="{Binding PendingCount}" FontWeight="Bold" FontSize="18"/>
+                            </TextBlock>
+                        </StackPanel>
                     </Border>
                 </StackPanel>
             </Grid>
@@ -188,16 +334,14 @@
 
         <!-- Add Todo Section -->
         <Border Grid.Row="1" 
-                Background="{StaticResource SurfaceBrush}" 
-                Padding="24,16"
-                BorderBrush="#E0E0E0" 
-                BorderThickness="0,0,0,1">
+                Style="{StaticResource CardStyle}"
+                Margin="32,24,32,8">
             <StackPanel>
-                <TextBlock Text="Add New Todo" 
-                           FontSize="18" 
-                           FontWeight="Medium" 
+                <TextBlock Text="✨ Add New Todo" 
+                           FontSize="20" 
+                           FontWeight="SemiBold" 
                            Foreground="{StaticResource TextPrimaryBrush}"
-                           Margin="0,0,0,12"/>
+                           Margin="0,0,0,16"/>
 
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -213,10 +357,9 @@
                     <TextBox Grid.Row="0" 
                              Grid.Column="0"
                              Text="{Binding NewTodoTitle, UpdateSourceTrigger=PropertyChanged}" 
-                             Style="{StaticResource ModernTextBox}"
+                             Style="{StaticResource FloatingLabelTextBox}"
                              FontSize="16"
-                             Margin="0,0,16,8"
-                             Tag="Enter todo title...">
+                             Margin="0,0,16,12">
                         <TextBox.InputBindings>
                             <KeyBinding Key="Enter" Command="{Binding AddTodoCommand}"/>
                         </TextBox.InputBindings>
@@ -229,20 +372,20 @@
                             Command="{Binding AddTodoCommand}"
                             Style="{StaticResource ModernButton}"
                             FontSize="14"
-                            Padding="20,12"
+                            FontWeight="SemiBold"
+                            Padding="24,12"
                             VerticalAlignment="Top"/>
 
                     <!-- Description Input -->
                     <TextBox Grid.Row="1" 
                              Grid.ColumnSpan="2"
                              Text="{Binding NewTodoDescription, UpdateSourceTrigger=PropertyChanged}" 
-                             Style="{StaticResource ModernTextBox}"
+                             Style="{StaticResource FloatingLabelTextBox}"
                              FontSize="14"
                              TextWrapping="Wrap"
                              AcceptsReturn="True"
-                             MaxHeight="80"
-                             Margin="0,0,0,8"
-                             Tag="Add description (optional)..."/>
+                             MinHeight="60"
+                             MaxHeight="100"/>
                 </Grid>
             </StackPanel>
         </Border>
@@ -250,7 +393,7 @@
         <!-- Todo List -->
         <ScrollViewer Grid.Row="2" 
                       VerticalScrollBarVisibility="Auto"
-                      Padding="24,16">
+                      Padding="32,8,32,16">
             <ItemsControl ItemsSource="{Binding TodoItems}"
                           ItemTemplate="{StaticResource TodoItemTemplate}">
                 <ItemsControl.ItemsPanel>
@@ -258,6 +401,42 @@
                         <StackPanel/>
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
+                <!-- Empty state -->
+                <ItemsControl.Style>
+                    <Style TargetType="ItemsControl">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding TodoItems.Count}" Value="0">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate>
+                                            <Border Style="{StaticResource CardStyle}" 
+                                                    Background="#FAFAFA"
+                                                    MinHeight="200">
+                                                <StackPanel VerticalAlignment="Center" 
+                                                            HorizontalAlignment="Center">
+                                                    <TextBlock Text="📝" 
+                                                               FontSize="48" 
+                                                               HorizontalAlignment="Center" 
+                                                               Margin="0,0,0,16"/>
+                                                    <TextBlock Text="No todos yet" 
+                                                               FontSize="20" 
+                                                               FontWeight="Medium"
+                                                               Foreground="{StaticResource TextSecondaryBrush}"
+                                                               HorizontalAlignment="Center"
+                                                               Margin="0,0,0,8"/>
+                                                    <TextBlock Text="Add your first todo above to get started" 
+                                                               FontSize="14" 
+                                                               Foreground="{StaticResource TextSecondaryBrush}"
+                                                               HorizontalAlignment="Center"/>
+                                                </StackPanel>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ItemsControl.Style>
             </ItemsControl>
         </ScrollViewer>
 
@@ -266,7 +445,7 @@
                 Background="{StaticResource SurfaceBrush}" 
                 BorderBrush="#E0E0E0" 
                 BorderThickness="0,1,0,0"
-                Padding="24,8">
+                Padding="32,12">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
@@ -274,28 +453,36 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <TextBlock Grid.Column="0"
-                           Text="{Binding StatusMessage}" 
-                           FontSize="12" 
-                           Foreground="{StaticResource TextSecondaryBrush}"
-                           VerticalAlignment="Center"/>
+                <StackPanel Grid.Column="0" 
+                            Orientation="Horizontal"
+                            VerticalAlignment="Center">
+                    <TextBlock Text="💬" 
+                               FontSize="14" 
+                               Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding StatusMessage}" 
+                               FontSize="13" 
+                               Foreground="{StaticResource TextSecondaryBrush}"
+                               VerticalAlignment="Center"/>
+                </StackPanel>
 
                 <Button Grid.Column="1"
                         Content="🔄 Refresh"
                         Command="{Binding LoadTodosCommand}"
-                        Style="{StaticResource ModernButton}"
-                        Background="Transparent"
-                        Foreground="{StaticResource PrimaryBrush}"
+                        Style="{StaticResource IconButton}"
+                        Width="Auto"
+                        Padding="12,6"
                         FontSize="12"
-                        Padding="8,4"
-                        Margin="0,0,8,0"/>
+                        Margin="0,0,12,0"
+                        ToolTip="Refresh todo list"/>
 
                 <ProgressBar Grid.Column="2"
                              IsIndeterminate="True" 
-                             Width="100" 
+                             Width="120" 
                              Height="4"
                              Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisConverter}}"
-                             VerticalAlignment="Center"/>
+                             VerticalAlignment="Center"
+                             Background="#E0E0E0"
+                             Foreground="{StaticResource PrimaryBrush}"/>
             </Grid>
         </Border>
     </Grid>
